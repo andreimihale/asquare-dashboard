@@ -1,0 +1,28 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "dev": "npm run dev:server & npm run dev:client",
+    "build:server": "cd server && npm run build",
+    "build:client": "cd client && npm run build",
+    "build": "npm run build:server && npm run build:client",
+    "start:server": "cd server && npm run start",
+    "start:client": "cd client && npm run start",
+    "start": "npm run start:server && npm run start:client",
+    "test:server": "cd server && npm run test",
+    "test:client": "cd client && npm run test",
+    "test": "npm run test:server && npm run test:client",
+    "lint:server": "cd server && npm run lint",
+    "lint:client": "cd client && npm run lint",
+    "lint": "npm run lint:server && npm run lint:client",
+    "lint:server:fix": "cd server && npm run lint:fix",
+    "lint:client:fix": "cd client && npm run lint:fix",
+    "lint:fix": "npm run lint:server:fix && npm run lint:client:fix",
+    "format:server": "cd server && npm run format",
+    "format:client": "cd client && npm run format",
+    "format": "npm run format:server && npm run format:client"
+  }
+}
