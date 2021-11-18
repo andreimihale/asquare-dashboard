@@ -1,0 +1,61 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "cross-env jest --coverage",
+    "build:clean": "rimraf ./{build}",
+    "build:server": "babel ./src/server/index.js -d build",
+    "build": "npm run build:clean && npm run build:server",
+    "dev": "nodemon --exec babel-node ./src/server/index.js",
+    "start": "npm run build && node build/index.js",
+    "lint": "eslint src --ext .js",
+    "lint:fix": "eslint src --ext .js --fix",
+    "lint:staged": "npx lint-staged",
+    "format": "prettier --write src/**/*.{js}",
+    "format:check": "prettier --check src/**/*.{js}"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.24.0",
+    "bcrypt": "^5.0.1",
+    "chalk": "^4.1.2",
+    "cross-env": "^7.0.3",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-openapi-validator": "^4.13.2",
+    "mongoose": "^6.0.13",
+    "multer": "^1.4.3",
+    "nock": "^13.2.1",
+    "swagger-ui-express": "^4.1.6",
+    "validator": "^13.7.0",
+    "yaml-jest": "^1.0.5"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/node": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
+    "babel-jest": "^27.3.1",
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jest": "^27.3.1",
+    "jest-sonar-reporter": "^2.0.0",
+    "lint-staged": "^12.0.2",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.4.1",
+    "pretty-quick": "^3.1.2",
+    "supertest": "^6.1.6"
+  },
+  "lint-staged": {
+    "!(*test).js": [
+      "pretty-quick --staged",
+      "eslint src --fix --ext .js"
+    ]
+  }
+}
