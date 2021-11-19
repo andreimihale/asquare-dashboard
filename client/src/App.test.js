@@ -4,6 +4,7 @@ import App from "./App";
 import "@testing-library/jest-dom";
 
 test("renders learn react link", () => {
+  console.log("Test husky");
   render(<App />);
   const linkElement = screen.getByText(/learn react/i);
   expect(linkElement).toBeInTheDocument();
