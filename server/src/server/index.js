@@ -6,6 +6,4 @@ const server = http
   })
   .listen(4001);
 
-console.log("Server is up and running 3");
-
 export default server;
