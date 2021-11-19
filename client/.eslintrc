@@ -3,7 +3,7 @@
   "plugins": ["jsx-a11y", "prettier"],
   "rules": {
     "semi": 1,
-    "no-console": 1,
+    "no-console": 2,
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "react/react-in-jsx-scope": "off",
     "prettier/prettier": [
