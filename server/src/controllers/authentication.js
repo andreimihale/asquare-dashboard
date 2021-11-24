@@ -2,15 +2,12 @@ import generatePassword from "../utils/generatePassword";
 import signJwt from "../utils/signJwt";
 import validPassword from "../utils/validPassword";
 import User from "../models/User";
-// import ProblemError from "../utils/ProblemError";
-import logger from "../utils/logger";
-// import passCookieToResponse from "../utils/sanitizeCookies";
+import ProblemError from "../utils/ProblemError";
 
 export const getProtected = async (req, res, next) => {
   try {
-    logger.info("IN GET PROTECTED");
     const publicUser = await req.user;
-    logger.info("PUBLIC USER");
+
     res.status(200).json({
       success: true,
       user: publicUser,
@@ -25,54 +22,42 @@ export const postLogin = async (req, res, next) => {
     const { body } = req;
 
     const user = await User.findOne({ email: body.email });
-    logger.info(user);
+
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        error: {
-          title: "wrong-credentials",
-          detail: "User or password are wrong",
-        },
-      });
+      throw new ProblemError(
+        400,
+        "wrong-credentials",
+        "Wrong credentials",
+        "Invalid email or password"
+      );
     }
 
     if (user.isActive === false) {
-      return res.status(401).json({
-        success: false,
-        error: {
-          title: "no-active",
-          detail:
-            "User is not activated. Please verify your email to activate it",
-        },
-      });
+      throw new ProblemError(
+        400,
+        "user-not-active",
+        "User not active",
+        "User is not activated. Please verify your email to activate it"
+      );
     }
 
     const isValid = validPassword(body.password, user.hash, user.salt);
-    logger.info("AFTER ISVALID");
-    if (isValid) {
-      logger.info("IN FIRST IF");
 
-      const tokenObject = signJwt(user);
-      logger.info("AFTER SIGN JWT");
-
-      logger.info("BEFORE PASS COOKIE");
-
-      logger.info("AFTER PASS COOKIE");
-      res.setHeader("token", tokenObject.token);
-      res.status(200).json({
-        success: true,
-        user,
-      });
-    } else {
-      logger.info("IN ELSE");
-      res.status(401).json({
-        success: false,
-        error: {
-          title: "wrong-credentils",
-          detail: "User or password are wrong",
-        },
-      });
+    if (!isValid) {
+      throw new ProblemError(
+        400,
+        "wrong-credentials",
+        "Wrong credentials",
+        "Invalid email or password"
+      );
     }
+    const tokenObject = signJwt(user);
+
+    res.setHeader("token", tokenObject.token);
+    res.status(200).json({
+      success: true,
+      user,
+    });
   } catch (error) {
     next(error);
   }
@@ -84,7 +69,16 @@ export const postRegister = async (req, res, next) => {
     const saltHash = generatePassword(body.password);
 
     const { email } = body;
+    const user = await User.findOne({ email });
 
+    if (user) {
+      throw new ProblemError(
+        400,
+        "email-already-exists",
+        "Email In Use",
+        "Email is already in use"
+      );
+    }
     email.trim();
     email.toLowerCase();
     const confirmationCode = new Date().valueOf();
@@ -99,18 +93,14 @@ export const postRegister = async (req, res, next) => {
       isActive: true,
     });
 
-    try {
-      await newUser.save();
+    await newUser.save();
 
-      res.status(201).json({
-        success: true,
-        title: "account-created",
-        detail:
-          "Account created successfully! We sent an activation link on email",
-      });
-    } catch (error) {
-      res.status(400).json({ success: false, data: { ...error } });
-    }
+    res.status(201).json({
+      success: true,
+      title: "account-created",
+      detail:
+        "Account created successfully! We sent an activation link on email",
+    });
   } catch (error) {
     next(error);
   }

@@ -7,7 +7,7 @@ import passport from "passport";
 import passportStrategy from "../utils/passport";
 // import swaggerDocument from "../../swagger/spec.json";
 import { version } from "../../package.json";
-// import errorMiddleware from "../middlewares/errorMiddleware";
+import errorMiddleware from "../middlewares/errorMiddleware";
 import indexRouter from "../routes";
 import "../services/mongodb";
 
@@ -58,5 +58,5 @@ app.get("*", (req, res) => {
 });
 
 // Add Error handling
-// app.use(errorMiddleware);
+app.use(errorMiddleware);
 export default app;
