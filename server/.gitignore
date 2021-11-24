@@ -7,3 +7,6 @@
 
 test-report.xml
 .env
+id_rsa_priv.pem
+id_rsa_pub.pem
+generateKeypair.js

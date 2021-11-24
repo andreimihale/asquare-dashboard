@@ -1,9 +1,9 @@
-import http from "http";
+import app from "./app";
+import logger from "../utils/logger";
+import "dotenv/config";
 
-const server = http
-  .createServer((req, res) => {
-    res.end("Hello from the server 4");
-  })
-  .listen(4001);
+app.listen(process.env.PORT || 3000, () => {
+  logger.info(`Server running on port ${process.env.PORT}`);
+});
 
-export default server;
+export default app;
