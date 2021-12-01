@@ -1,27 +1,19 @@
-import jsonwebtoken from "jsonwebtoken";
-import fs from "fs";
-import path from "path";
-
-const pathToKey = path.join(path.dirname(__filename), "../id_rsa_priv.pem");
-
-const PRIV_KEY = fs.readFileSync(pathToKey, "utf8");
+import jwt from "jsonwebtoken";
+import "dotenv/config";
 
 const signJwt = (user) => {
-  const { _id } = user;
-  const expiresIn = "14d";
+  const { _id, role } = user;
+  const expiresIn = 60;
 
   const payload = {
-    sub: _id,
-    iat: Date.now(),
+    userId: _id,
+    role,
   };
 
-  const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, {
-    expiresIn,
-    algorithm: "RS256",
-  });
+  const signedToken = jwt.sign(payload, process.env.JWT_SECRET);
 
   return {
-    token: `Bearer ${signedToken}`,
+    token: `${signedToken}`,
     expires: expiresIn,
   };
 };

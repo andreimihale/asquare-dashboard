@@ -2,13 +2,10 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    salutation: { type: String, default: null },
     firstName: { type: String, trim: true, required: true },
     lastName: { type: String, trim: true, required: true },
     middleName: { type: String, trim: true },
     alias: { type: String, trim: true, default: null },
-    confirmationCode: { type: String },
-    isActive: { type: Boolean, default: false },
     dateOfBirth: {
       day: {
         type: String,
@@ -23,7 +20,7 @@ const userSchema = new mongoose.Schema(
       year: {
         type: String,
         default: "",
-        validate: /^$|19[4-9]{1}\d{1}|200\d{1}|201[0-9]{1}|202[0-1]{1}/,
+        validate: /^$|19\d{2}|200\d{1}|201\d{1}|202[0-1]{1}/,
       },
     },
     email: {
@@ -35,51 +32,48 @@ const userSchema = new mongoose.Schema(
     },
     salt: { type: String, required: true },
     hash: { type: String, required: true },
-
-    mobilePhoneNumber: { type: String, default: null },
-    homePhoneNumber: { type: String, default: null },
-    isAdmin: {
+    phones: [
+      {
+        phone: { type: String, trim: true, maxlength: 30, minlength: 4 },
+        type: { type: String, enum: ["Home", "Mobile", "Work"] },
+      },
+    ],
+    role: {
       type: String,
+      enum: ["user", "support", "admin"],
       default: "user",
     },
     avatar: { type: String, default: null },
-    invoiceAddress: [
+    favorites: [
       {
-        addressId: { type: String },
-        address: {
-          building: { type: String, default: null },
-          countryCode: { type: String, default: null },
-          country: { type: String, default: null },
-          houseNumber: { type: String, default: null },
-          locality: { type: String, default: null },
-          postCode: { type: String, default: null },
-          street: { type: String, default: null },
-          town: { type: String, default: null },
-          unit: { type: String, default: null },
-        },
-        contactDetails: {
-          email: { type: String, default: null },
-          phones: [
-            {
-              phone: { type: String, default: null },
-              type: {
-                type: String,
-                default: null,
-                validate: /^$|HOME|WORK|MOBILE/,
-              },
-            },
-          ],
-        },
-        name: {
-          first: { type: String, default: null },
-          last: { type: String, default: null },
-          middle: { type: String, default: null },
-        },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+    ],
+    productCreated: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+    ],
+    savedAddress: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Address",
       },
     ],
   },
   { timestamps: true }
 );
 
-const User = mongoose.model("user", userSchema);
+userSchema.methods.getPublicProfile = async () => {
+  const user = this;
+  const userData = user.toObject();
+  delete userData.hash;
+  delete userData.salt;
+  return userData;
+};
+
+const User = mongoose.model("User", userSchema);
+
 export default User;
