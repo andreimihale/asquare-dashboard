@@ -53,11 +53,19 @@ export const postLogin = async (req, res, next) => {
     }
     const tokenObject = signJwt(user);
 
-    res.setHeader("token", tokenObject.token);
-    res.status(200).json({
-      success: true,
-      user,
-    });
+    res
+      .cookie("access_token", tokenObject.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(Date.now() + 60 * 1000),
+      })
+      .status(200)
+      .json({ success: true, user });
+    // res.setHeader("token", tokenObject.token);
+    // res.status(200).json({
+    //   success: true,
+    //   user,
+    // });
   } catch (error) {
     next(error);
   }
