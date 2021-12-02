@@ -3,7 +3,9 @@ import {
   getProtected,
   postLogin,
   postRegister,
-} from "../controllers/authentication";
+  confirmEmail,
+  resendValidationEmail,
+} from "../controllers/auth";
 import authorization from "../middlewares/cookieMiddleware";
 
 const authRouter = Router();
@@ -17,4 +19,6 @@ authRouter.get("/logout", authorization, (req, res) => {
     .status(200)
     .json({ message: "Successfully logged out" });
 });
+authRouter.get("/active/:confirmationCode", confirmEmail);
+authRouter.post("/resend/email", resendValidationEmail);
 export default authRouter;

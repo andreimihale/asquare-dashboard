@@ -46,14 +46,11 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
       reqired: true,
     },
-    paymentId: { type: mongoose.Schema.Types.ObjectId, ref: "Payment" },
-    deliveryId: { type: mongoose.Schema.Types.ObjectId, ref: "Delivery" },
-    returnId: { type: mongoose.Schema.Types.ObjectId, ref: "Return" },
     voucherId: { type: mongoose.Schema.Types.ObjectId, ref: "Voucher" },
   },
   { timestamps: true }
 );
 
-const Order = mongoose.model("Order", orderSchema);
+const Order = mongoose.model("Order", orderSchema, "order");
 
 export default Order;

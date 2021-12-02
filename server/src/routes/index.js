@@ -1,8 +1,8 @@
 import Router from "express";
-import authRouter from "./authentication";
+import authRouter from "./auth";
 
 const indexRouter = Router();
 
-indexRouter.use("/authenticatication", authRouter);
+indexRouter.use("/auth", authRouter);
 
 export default indexRouter;

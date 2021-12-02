@@ -16,8 +16,13 @@ const returnSchema = new mongoose.Schema({
   products: [
     { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
   ],
+  orderId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Order",
+    required: true,
+  },
 });
 
-const Return = mongoose.model("Return", returnSchema);
+const Return = mongoose.model("Return", returnSchema, "return");
 
 export default Return;

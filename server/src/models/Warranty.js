@@ -28,6 +28,6 @@ const warrantySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Warranty = mongoose.model("Warranty", warrantySchema);
+const Warranty = mongoose.model("Warranty", warrantySchema, "warranty");
 
 export default Warranty;

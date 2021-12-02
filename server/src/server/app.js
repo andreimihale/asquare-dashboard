@@ -6,7 +6,7 @@ import path from "path";
 // import swaggerDocument from "../../swagger/spec.json";
 import { version } from "../../package.json";
 import errorMiddleware from "../middlewares/errorMiddleware";
-import indexRouter from "../routes";
+import indexRouter from "../routes/index";
 import "../services/mongodb";
 
 const publicDir = path.join(path.dirname(__filename), "..", "/views/");
