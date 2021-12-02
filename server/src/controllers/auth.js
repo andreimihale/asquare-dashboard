@@ -23,9 +23,9 @@ export const getProtected = async (req, res, next) => {
 
 export const postLogin = async (req, res, next) => {
   try {
-    const { body } = req;
+    const { email, password } = req.body;
 
-    const user = await User.findOne({ email: body.email });
+    const user = await User.findOne({ email });
 
     if (!user) {
       throw new ProblemError(
@@ -36,7 +36,7 @@ export const postLogin = async (req, res, next) => {
       );
     }
 
-    if (user.isActive === false) {
+    if (user.isActive === "pending") {
       throw new ProblemError(
         400,
         "user-not-active",
@@ -45,7 +45,16 @@ export const postLogin = async (req, res, next) => {
       );
     }
 
-    const isValid = validPassword(body.password, user.hash, user.salt);
+    if (user.isActive === "blocked") {
+      throw new ProblemError(
+        400,
+        "user-blocked",
+        "User blocked",
+        "User has been blocked for violating our T&C"
+      );
+    }
+
+    const isValid = validPassword(password, user.hash, user.salt);
 
     if (!isValid) {
       throw new ProblemError(
@@ -55,21 +64,29 @@ export const postLogin = async (req, res, next) => {
         "Invalid email or password"
       );
     }
+
+    const dateNow = new Date();
+    const userDate = new Date(user.resetPasswordExpires);
+
+    if (dateNow > userDate) {
+      throw new ProblemError(
+        403,
+        "password-expire",
+        "Your password exipred",
+        "Your password have expired. Please change your password"
+      );
+    }
+
     const tokenObject = signJwt(user);
 
     res
       .cookie("access_token", tokenObject.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        expires: new Date(Date.now() + 60 * 1000),
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
       })
       .status(200)
       .json({ success: true, user });
-    // res.setHeader("token", tokenObject.token);
-    // res.status(200).json({
-    //   success: true,
-    //   user,
-    // });
   } catch (error) {
     next(error);
   }
@@ -115,7 +132,6 @@ export const postRegister = async (req, res, next) => {
     }
 
     const user = await User.findOne({ email });
-
     if (user) {
       throw new ProblemError(
         400,
@@ -151,8 +167,8 @@ export const postRegister = async (req, res, next) => {
     await sendConfirmationEmail(body.firstName, email, activationToken);
     await newUser.save();
     await newCart.save();
-
-    if (body.subscribe) {
+    const subscription = Subscribe.findOne({ email });
+    if (body.subscribe && !subscription) {
       const newSubscribe = new Subscribe({
         userId: newUser._id,
         email: newUser.email,

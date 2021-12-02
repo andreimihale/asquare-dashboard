@@ -1,20 +1,32 @@
 import jwt from "jsonwebtoken";
 import "dotenv/config";
+import ProblemError from "../utils/ProblemError";
 
 const authorization = (req, res, next) => {
   const token = req.cookies.access_token;
 
   if (!token) {
-    return res.sendStatus(403);
+    throw new ProblemError(403, "no-cookie", "Log in", "Please log in first");
   }
   try {
     const data = jwt.verify(token, process.env.JWT_SECRET);
+    const dateNow = new Date();
+    const userDate = new Date(data.resetPasswordExpires);
 
+    if (dateNow > userDate) {
+      throw new ProblemError(
+        403,
+        "password-expire",
+        "Your password exipred",
+        "Your password have expired. Please change your password"
+      );
+    }
     req.userId = data.userId;
     req.userRole = data.role;
+    req.resetPasswordExpires = userDate;
     return next();
-  } catch {
-    return res.sendStatus(403);
+  } catch (error) {
+    return res.status(403).send(error);
   }
 };
 
