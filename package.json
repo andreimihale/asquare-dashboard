@@ -33,7 +33,8 @@
   },
   "lint-staged": {
     "!(*test).{js, jsx}": [
-      "pretty-quick --staged"
+      "pretty-quick --staged",
+      "npm run lint:fix"
     ]
   }
 }
