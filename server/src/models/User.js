@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema(
   {
     firstName: { type: String, trim: true, required: true },
     lastName: { type: String, trim: true, required: true },
-    middleName: { type: String, trim: true },
+    middleName: { type: String, trim: true, default: null },
     alias: { type: String, trim: true, default: null },
     dateOfBirth: {
       day: {
@@ -35,7 +35,11 @@ const userSchema = new mongoose.Schema(
     phones: [
       {
         phone: { type: String, trim: true, maxlength: 30, minlength: 4 },
-        type: { type: String, enum: ["Home", "Mobile", "Work"] },
+        type: {
+          type: String,
+          enum: ["Home", "Mobile", "Work"],
+          default: "Mobile",
+        },
       },
     ],
     role: {
@@ -62,18 +66,43 @@ const userSchema = new mongoose.Schema(
         ref: "Address",
       },
     ],
+    creditCards: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CreditCard",
+      },
+    ],
+    isActive: {
+      type: String,
+      default: "pending",
+      enum: ["active", "pending", "blocked"],
+    },
+    /* For reset password */
+    resetPasswordToken: {
+      type: String,
+    },
+    activationToken: {
+      type: String,
+    },
+    resetPasswordExpires: {
+      type: Date,
+      required: true,
+    },
   },
   { timestamps: true }
 );
 
-userSchema.methods.getPublicProfile = async () => {
+/* eslint-disable-next-line func-names */
+userSchema.methods.getPublicProfile = async function () {
   const user = this;
+
   const userData = user.toObject();
+
   delete userData.hash;
   delete userData.salt;
   return userData;
 };
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema, "user");
 
 export default User;

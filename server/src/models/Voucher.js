@@ -18,6 +18,6 @@ const voucherSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Voucher = mongoose.model("Voucher", voucherSchema);
+const Voucher = mongoose.model("Voucher", voucherSchema, "voucher");
 
 export default Voucher;
