@@ -11,10 +11,10 @@ import Subscribe from "../models/Subscribe";
 export const getProtected = async (req, res, next) => {
   try {
     const publicUser = await req.user;
-
+    const publicProfile = await publicUser.getPublicProfile();
     res.status(200).json({
       success: true,
-      user: publicUser,
+      user: publicProfile,
     });
   } catch (error) {
     next(error);
@@ -154,7 +154,7 @@ export const postRegister = async (req, res, next) => {
       email,
       salt: saltHash.salt,
       hash: saltHash.hash,
-      phones: [body.phone] || [],
+      phones: body.phone || [],
       avatar: body.avatar || null,
       isActive: "pending",
       activationToken,
@@ -178,12 +178,11 @@ export const postRegister = async (req, res, next) => {
       await newSubscribe.save();
     }
 
-    res.status(201).json({
-      success: true,
+    res.status(200).json({
       title: "account-created",
       detail:
         "Account created successfully! We sent an activation link on email",
-      data: {
+      userData: {
         activationToken: newUser.activationToken,
         email: newUser.email,
         name: newUser.firstName,
@@ -211,7 +210,7 @@ export const confirmEmail = async (req, res, next) => {
     }
 
     user.isActive = "active";
-    user.ativationToken = null;
+    user.activationToken = null;
     await user.save();
     res.status(200).json();
   } catch (error) {

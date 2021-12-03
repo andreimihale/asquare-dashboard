@@ -4,7 +4,6 @@ import { serve, setup } from "swagger-ui-express";
 import * as OpenApiValidator from "express-openapi-validator";
 import cookieParser from "cookie-parser";
 import path from "path";
-// import swaggerDocument from "../../swagger/spec.json";
 import { version } from "../../package.json";
 import errorMiddleware from "../middlewares/errorMiddleware";
 import indexRouter from "../routes/index";

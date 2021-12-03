@@ -20,5 +20,5 @@ authRouter.get("/logout", authorization, (req, res) => {
     .json({ message: "Successfully logged out" });
 });
 authRouter.get("/active/:confirmationCode", confirmEmail);
-authRouter.post("/resend/email", resendValidationEmail);
+authRouter.post("/resendemail", resendValidationEmail);
 export default authRouter;
