@@ -7,6 +7,11 @@ const creditCardSchema = new mongoose.Schema(
     expiryYear: { type: Number, required: true },
     brand: { type: String, required: true },
     country: { type: String, required: true },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   { timestamps: true }
 );

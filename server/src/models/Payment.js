@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   orderId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Order",
@@ -15,16 +15,17 @@ const paymentSchema = new mongoose.Schema({
     enum: ["Paid", "Unpaid", "On Hold"],
   },
   cardDetails: {
-    stripeId: { type: String, required: true },
-    brand: { type: String, required: true },
-    last4digits: { type: String, required: true },
-    expMonth: { type: Number, required: true },
-    expYear: { type: Number, required: true },
+    stripeId: { type: String },
+    brand: { type: String },
+    last4digits: { type: String },
+    expMonth: { type: Number },
+    expYear: { type: Number },
   },
   paymentType: {
     type: String,
     required: true,
-    enum: ["credit", "cash", "bank_transfer", "debit"],
+    default: "card",
+    enum: ["card", "cash", "bank_transfer", "paypal"],
   },
   paymentId: { type: String, default: null },
   paymentDescription: { type: String, required: true },

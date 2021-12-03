@@ -12,7 +12,21 @@ const warrantySchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+    },
+    customerDetails: {
+      firstName: { type: String, required: true },
+      lastName: { type: String, required: true },
+      email: { type: String, required: true },
+      phones: [
+        {
+          phone: { type: String, required: true, maxlength: 30, minlength: 4 },
+          type: {
+            type: String,
+            required: true,
+            enum: ["Home", "Work", "Mobile"],
+          },
+        },
+      ],
     },
     orderId: {
       type: mongoose.Schema.Types.ObjectId,

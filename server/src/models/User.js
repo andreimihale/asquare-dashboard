@@ -66,12 +66,6 @@ const userSchema = new mongoose.Schema(
         ref: "Address",
       },
     ],
-    creditCards: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "CreditCard",
-      },
-    ],
     isActive: {
       type: String,
       default: "pending",
