@@ -79,6 +79,8 @@ export const postLogin = async (req, res, next) => {
 
     const tokenObject = signJwt(user);
 
+    const publicProfile = await user.getPublicProfile();
+
     res
       .cookie("access_token", tokenObject.token, {
         httpOnly: true,
@@ -86,7 +88,7 @@ export const postLogin = async (req, res, next) => {
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
       })
       .status(200)
-      .json({ success: true, user });
+      .json({ userProfile: publicProfile });
   } catch (error) {
     next(error);
   }

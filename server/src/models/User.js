@@ -92,9 +92,12 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.methods.getPublicProfile = async () => {
+/* eslint-disable-next-line func-names */
+userSchema.methods.getPublicProfile = async function () {
   const user = this;
+
   const userData = user.toObject();
+
   delete userData.hash;
   delete userData.salt;
   return userData;
