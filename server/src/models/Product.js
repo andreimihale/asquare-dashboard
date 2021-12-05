@@ -47,6 +47,11 @@ const productSchema = new mongoose.Schema(
       ref: "Brand",
       required: true,
     },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Admin",
+      required: true,
+    },
   },
   { timestamps: true }
 );

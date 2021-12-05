@@ -32,7 +32,7 @@ const returnSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   adminId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: "Admin",
     required: true,
   },
   contactDetails: {

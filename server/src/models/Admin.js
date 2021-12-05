@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema(
+const adminSchema = new mongoose.Schema(
   {
     firstName: { type: String, trim: true, required: true },
     lastName: { type: String, trim: true, required: true },
@@ -9,17 +9,17 @@ const userSchema = new mongoose.Schema(
     dateOfBirth: {
       day: {
         type: String,
-        default: "",
+        required: true,
         validate: /^$|0[1-9]{1}|[12]\d{1}|3[01]{1}/,
       },
       month: {
         type: String,
-        default: "",
+        required: true,
         validate: /^$|0[1-9]{1}|1[012]{1}/,
       },
       year: {
         type: String,
-        default: "",
+        required: true,
         validate: /^$|19\d{2}|200\d{1}|201\d{1}|202[0-1]{1}/,
       },
     },
@@ -44,10 +44,17 @@ const userSchema = new mongoose.Schema(
     ],
     role: {
       type: String,
-      default: "user",
+      enum: ["user", "support", "admin"],
+      required: true,
     },
     avatar: { type: String },
     favorites: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+    ],
+    productCreated: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
@@ -61,16 +68,19 @@ const userSchema = new mongoose.Schema(
     ],
     isActive: {
       type: String,
-      default: "pending",
+      default: "active",
       enum: ["active", "pending", "blocked"],
+    },
+    manager: { type: mongoose.Schema.Types.ObjectId, ref: "Admin" },
+    department: {
+      type: String,
+      enum: ["sales", "office", "support", "hr", "it", "marketing", "other"],
+      required: true,
     },
     /* For reset password */
     resetPasswordToken: {
       type: String,
       required: true,
-    },
-    activationToken: {
-      type: String,
     },
     resetPasswordExpires: {
       type: Date,
@@ -80,17 +90,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-/* eslint-disable-next-line func-names */
-userSchema.methods.getPublicProfile = async function () {
-  const user = this;
+const Admin = mongoose.model("Admin", adminSchema, "admin");
 
-  const userData = user.toObject();
-
-  delete userData.hash;
-  delete userData.salt;
-  return userData;
-};
-
-const User = mongoose.model("User", userSchema, "user");
-
-export default User;
+export default Admin;

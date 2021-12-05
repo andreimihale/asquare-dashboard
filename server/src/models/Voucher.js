@@ -13,6 +13,11 @@ const voucherSchema = new mongoose.Schema(
     discount: { type: Number, required: true },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Admin",
+      required: true,
+    },
     isAdd: { type: Boolean, default: false },
   },
   { timestamps: true }
