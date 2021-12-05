@@ -2,6 +2,26 @@ import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  customerDetails: {
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    email: { type: String, required: true },
+    phones: [
+      {
+        phone: {
+          type: String,
+          required: true,
+          maxlength: 30,
+          minlength: 4,
+        },
+        type: {
+          type: String,
+          required: true,
+          enum: ["Home", "Work", "Mobile"],
+        },
+      },
+    ],
+  },
   orderId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Order",
@@ -12,7 +32,7 @@ const paymentSchema = new mongoose.Schema({
   paymentStatus: {
     type: String,
     required: true,
-    enum: ["Paid", "Unpaid", "On Hold"],
+    enum: ["paid", "unpaid", "onHold"],
   },
   cardDetails: {
     stripeId: { type: String },
@@ -25,10 +45,10 @@ const paymentSchema = new mongoose.Schema({
     type: String,
     required: true,
     default: "card",
-    enum: ["card", "cash", "bank_transfer", "paypal"],
+    enum: ["card", "cashOnDelivery", "cashInShop", "bankTransfer", "paypal"],
   },
-  paymentId: { type: String, default: null },
-  paymentDescription: { type: String, required: true },
+  stripePaymentId: { type: String },
+  paymentDescription: { type: String },
   paymentAmount: { type: Number, required: true },
 });
 

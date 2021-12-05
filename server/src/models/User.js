@@ -4,8 +4,8 @@ const userSchema = new mongoose.Schema(
   {
     firstName: { type: String, trim: true, required: true },
     lastName: { type: String, trim: true, required: true },
-    middleName: { type: String, trim: true, default: null },
-    alias: { type: String, trim: true, default: null },
+    middleName: { type: String, trim: true },
+    alias: { type: String, trim: true },
     dateOfBirth: {
       day: {
         type: String,
@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "support", "admin"],
       default: "user",
     },
-    avatar: { type: String, default: null },
+    avatar: { type: String },
     favorites: [
       {
         type: mongoose.Schema.Types.ObjectId,

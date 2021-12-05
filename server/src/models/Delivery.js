@@ -4,21 +4,17 @@ const deliverySchema = new mongoose.Schema({
   deliveryId: { type: String, required: true },
   deliveryDate: { type: Date, required: true },
   deliveryLink: { type: String, default: null },
-  deliveryAddressId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Address",
-  },
   contactDetails: {
     deliveryAddress: {
       building: { type: String, maxlength: 60 },
       houseNumber: { type: String, maxlength: 60 },
       unit: { type: String, maxlength: 60 },
-      street: { type: String, maxlength: 60 },
+      street: { type: String, maxlength: 60, required: true },
       postCode: { type: String, maxlength: 20 },
-      locality: { type: String, maxlength: 60 },
-      city: { type: String, maxlength: 60 },
+      locality: { type: String, maxlength: 60, required: true },
+      city: { type: String, maxlength: 60, required: true },
       county: { type: String, maxlength: 60 },
-      country: { type: String, maxlength: 60 },
+      country: { type: String, maxlength: 60, required: true },
     },
     customerDetails: {
       firstName: { type: String, required: true },
@@ -51,7 +47,7 @@ const deliverySchema = new mongoose.Schema({
     ref: "Order",
     required: true,
   },
-  paymentType: {
+  paymentId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Payment",
     required: true,
@@ -59,12 +55,15 @@ const deliverySchema = new mongoose.Schema({
   deliveryType: {
     type: String,
     enum: ["delivery", "pickup"],
+    required: true,
   },
-  deliveryPrice: { type: Number, default: 0 },
-  deliveryFee: { type: Number, default: 0 },
-  deliveryTotal: { type: Number, default: 0 },
+  deliveryPrice: { type: Number, required: true },
+  deliveryFee: { type: Number, required: true },
+  deliveryTotal: { type: Number, required: true },
   deliveryNote: { type: String, default: null },
-  deliveryItems: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+  deliveryItems: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+  ],
 });
 
 const Delivery = mongoose.model("Delivery", deliverySchema, "delivery");

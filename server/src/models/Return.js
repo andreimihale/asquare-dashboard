@@ -3,19 +3,20 @@ import mongoose from "mongoose";
 const returnSchema = new mongoose.Schema({
   returnDate: { type: Date, default: Date.now },
   returnReason: { type: String, required: true },
+  returnPrice: { type: Number, required: true },
   returnStatus: {
     type: String,
-    default: "",
+    default: "pending",
     enum: [
       "pending",
       "approved",
       "rejected",
       "collecting",
       "collected",
-      "to warehouse",
+      "toWarehouse",
     ],
   },
-  isReturnedBy: {
+  returnedBy: {
     type: String,
     required: true,
     enum: ["customer", "admin"],
@@ -28,55 +29,39 @@ const returnSchema = new mongoose.Schema({
     ref: "Order",
     required: true,
   },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   adminId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
   contactDetails: {
-    address: {
+    customerAddress: {
       building: { type: String, maxlength: 60 },
       houseNumber: { type: String, maxlength: 60 },
       unit: { type: String, maxlength: 60 },
-      street: { type: String, required: true, maxlength: 60 },
+      street: { type: String, maxlength: 60, required: true },
       postCode: { type: String, maxlength: 20 },
-      locality: { type: String, required: true, maxlength: 60 },
-      city: { type: String, required: true, maxlength: 60 },
-      county: { type: String, required: true, maxlength: 60 },
-      country: { type: String, required: true, maxlength: 60 },
-      type: {
-        type: String,
-        default: "HOMEADDRESS",
-        enum: ["HOMEADDRESS", "STOREADDRESS"],
-      },
+      locality: { type: String, maxlength: 60, required: true },
+      city: { type: String, maxlength: 60, required: true },
+      county: { type: String, maxlength: 60 },
+      country: { type: String, maxlength: 60, required: true },
     },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-      lowercase: true,
-    },
-    phones: [
-      {
-        phone: {
-          type: String,
-          required: true,
-          maxlength: 30,
-          minlength: 4,
-        },
-        type: {
-          type: String,
-          required: true,
-          enum: ["Home", "Work", "Mobile"],
-        },
-      },
-    ],
+
     customerDetails: {
-      firstName: { type: String, required: true, maxlength: 60 },
-      lastName: { type: String, required: true, maxlength: 60 },
-      middleName: { type: String, maxlength: 60 },
+      firstName: { type: String, required: true },
+      lastName: { type: String, required: true },
+      email: { type: String, required: true },
+      phones: [
+        {
+          phone: { type: String, required: true, maxlength: 30, minlength: 4 },
+          type: {
+            type: String,
+            required: true,
+            enum: ["Home", "Work", "Mobile"],
+          },
+        },
+      ],
     },
   },
 });

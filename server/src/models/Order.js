@@ -11,8 +11,8 @@ const orderSchema = new mongoose.Schema(
         enum: ["percent", "amount"],
       },
       discount: { type: Number, default: 0 },
+      totalPrice: { type: Number, required: true },
     },
-    isPaid: { type: Boolean, default: false },
     status: {
       type: String,
       default: "pending",
@@ -30,23 +30,23 @@ const orderSchema = new mongoose.Schema(
         building: { type: String, maxlength: 60 },
         houseNumber: { type: String, maxlength: 60 },
         unit: { type: String, maxlength: 60 },
-        street: { type: String, maxlength: 60 },
+        street: { type: String, maxlength: 60, required: true },
         postCode: { type: String, maxlength: 20 },
-        locality: { type: String, maxlength: 60 },
-        city: { type: String, maxlength: 60 },
+        locality: { type: String, maxlength: 60, required: true },
+        city: { type: String, maxlength: 60, required: true },
         county: { type: String, maxlength: 60 },
-        country: { type: String, maxlength: 60 },
+        country: { type: String, maxlength: 60, required: true },
       },
       invoiceAddress: {
         building: { type: String, maxlength: 60 },
         houseNumber: { type: String, maxlength: 60 },
         unit: { type: String, maxlength: 60 },
-        street: { type: String, maxlength: 60 },
+        street: { type: String, maxlength: 60, required: true },
         postCode: { type: String, maxlength: 20 },
-        locality: { type: String, maxlength: 60 },
+        locality: { type: String, maxlength: 60, required: true },
         city: { type: String, maxlength: 60 },
         county: { type: String, maxlength: 60 },
-        country: { type: String, maxlength: 60 },
+        country: { type: String, maxlength: 60, required: true },
       },
       customerDetails: {
         firstName: { type: String, required: true },
@@ -69,16 +69,6 @@ const orderSchema = new mongoose.Schema(
         ],
       },
     },
-
-    deliveryAddressId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Address",
-    },
-    invoiceAddressId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Address",
-    },
-
     products: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
     ],
@@ -87,6 +77,11 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
     },
     voucherId: { type: mongoose.Schema.Types.ObjectId, ref: "Voucher" },
+    paymentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Payment",
+      required: true,
+    },
   },
   { timestamps: true }
 );

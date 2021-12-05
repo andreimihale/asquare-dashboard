@@ -5,10 +5,15 @@ const warrantySchema = new mongoose.Schema(
     expirationDate: { type: Date, required: true },
     warrantyType: {
       type: String,
-      default: "Warranty",
-      enum: ["Warranty", "Extended Warranty", "No Warranty"],
+      default: "warranty",
+      enum: ["warranty", "extendedWarranty", "noWarranty"],
     },
-    warrantyPeriod: { type: Number, required: true },
+    warrantyPeriod: { type: Number, default: 24 },
+    warrantyPeriodType: {
+      type: String,
+      enum: ["day", "month", "year"],
+      default: "month",
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -38,6 +43,7 @@ const warrantySchema = new mongoose.Schema(
       ref: "Product",
       required: true,
     },
+    productSku: { type: String, required: true },
   },
   { timestamps: true }
 );

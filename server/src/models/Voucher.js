@@ -4,7 +4,7 @@ const voucherSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, maxlength: 200 },
     description: { type: String, required: true, maxlength: 2000 },
-    image: { type: String, default: "" },
+    image: { type: String },
     discountType: {
       type: String,
       default: "percentage",

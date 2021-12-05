@@ -88,7 +88,7 @@ export const postLogin = async (req, res, next) => {
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
       })
       .status(200)
-      .json({ userProfile: publicProfile });
+      .json(publicProfile);
   } catch (error) {
     next(error);
   }

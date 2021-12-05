@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   description: Definition of the operations available for the ASquare Dashboard
   title: ASquare APIs
-  version: 0.0.1
+  version: 0.1.0
 servers:
   - url: http://localhost:3000/api
 paths:
@@ -41,7 +41,8 @@ paths:
         description: The request body for logging in.
         required: true
       operationId: userAuthentication
-      summary: Logs in the user using email and password
+      summary: Login user
+      description: Login user using email and password
       tags:
         - Authentication
   /auth/register:
@@ -73,7 +74,8 @@ paths:
         description: The request body for registering a user
         required: true
       operationId: userRegister
-      summary: Register new user
+      summary: Register user
+      description: Create a new user
       tags:
         - Authentication
   /auth/active/{confirmationCode}:
@@ -101,7 +103,35 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
           description: "Internal server error. Additional details will be contained on the server logs."
       operationId: userActivation
-      summary: Activate user via email
+      summary: Activate user
+      description: Activate user via email. Send request to activate user
+      tags:
+        - Authentication
+  /auth/resendemail:
+    post:
+      responses:
+        "200":
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Bad request. Some of the inputs provided to the request aren't valid"
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Internal server error. Additional details will be contained on the server logs."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResendEmailBody"
+      operationId: userResendEmail
+      summary: Resend activation email
+      description: Resend activation email with the activation token
       tags:
         - Authentication
   /auth/logout:
@@ -135,33 +165,8 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
           description: "Internal server error. Additional details will be contained on the server logs."
       operationId: userLogout
-      summary: Logout user
-      tags:
-        - Authentication
-  /auth/resendemail:
-    post:
-      responses:
-        "200":
-          description: The request completed successfully
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-          description: "Bad request. Some of the inputs provided to the request aren't valid"
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-          description: "Internal server error. Additional details will be contained on the server logs."
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ResendEmailBody"
-      operationId: userResendEmail
-      summary: Resend email for activating account
+      summary: Logout
+      description: Send empty cookies to log out a user
       tags:
         - Authentication
   /auth/protected:
@@ -200,6 +205,7 @@ paths:
           description: "Internal server error. Additional details will be contained on the server logs."
       operationId: userProtected
       summary: Protected Route
+      description: Protected route only for logged users
       tags:
         - Testing
 
@@ -274,6 +280,501 @@ components:
         user:
           $ref: "#/components/schemas/UserProfile"
 
+    UserAddress:
+      properties:
+        building:
+          type: string
+          maxLength: 60
+          nullable: true
+        houseNumber:
+          type: string
+          maxLength: 60
+          nullable: true
+        unit:
+          type: string
+          maxLength: 60
+          nullable: true
+        street:
+          type: string
+          maxLength: 60
+        postCode:
+          type: string
+          maxLength: 20
+          nullable: true
+        locality:
+          type: string
+          maxLength: 60
+        city:
+          type: string
+          maxLength: 60
+        county:
+          type: string
+          maxLength: 60
+          nullable: true
+        country:
+          type: string
+          maxLength: 60
+        type:
+          type: string
+          enum:
+            - HOMEADDRESS
+            - STOREADDRESS
+        isDefault:
+          type: boolean
+          default: false
+      required:
+        - street
+        - locality
+        - city
+        - country
+        - type
+
+    Brand:
+      properties:
+        brandName:
+          type: string
+        brandDescription:
+          type: string
+        brandImage:
+          type: string
+          nullable: true
+      required:
+        - brandName
+        - brandDescription
+
+    Cart:
+      properties:
+        products:
+          type: array
+          nullable: true
+          items:
+            type: object
+            properties:
+              productId:
+                type: string
+                nullable: true
+              quantity:
+                type: number
+                nullable: true
+        userId:
+          type: string
+        price:
+          type: number
+          default: 0
+        discount:
+          type: number
+          default: 0
+        totalPrice:
+          type: number
+          default: 0
+      required:
+        - userId
+
+    Category:
+      properties:
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        image:
+          type: string
+        products:
+          type: array
+          nullable: true
+          items:
+            type: string
+      required:
+        - title
+        - description
+        - image
+
+    CreditCard:
+      properties:
+        last4digits:
+          type: string
+        expiryMonth:
+          type: string
+        expiryYear:
+          type: string
+        brand:
+          type: string
+        country:
+          type: string
+        userId:
+          type: string
+      required:
+        - last4digits
+        - expiryMonth
+        - exipryYear
+        - brand
+        - country
+        - userId
+
+    Delivery:
+      properties:
+        deliveryId:
+          type: string
+        deliveryDate:
+          type: string
+          format: date
+        deliveryLink:
+          type: string
+        contactDetails:
+          type: object
+          properties:
+            deliveryAddress:
+              $ref: "#/components/schemas/Address"
+            customerDetails:
+              $ref: "#/components/schemas/CustomerDetails"
+        deliveryStatus:
+          type: string
+          enum:
+            - colelcting
+            - delivering
+            - delivered
+          default: collecting
+        userId:
+          type: string
+        orderId:
+          type: string
+        paymentId:
+          type: string
+        deliveryType:
+          type: string
+          enum:
+            - delivery
+            - pickup
+        deliveryPrice:
+          type: number
+        deliveryFee:
+          type: number
+        deliveryTotal:
+          type: number
+        deliveryNote:
+          type: string
+          nullable: true
+        deliveryItems:
+          type: array
+          items:
+            type: string
+      required:
+        - deliveryId
+        - deliveryDate
+        - deliveryLink
+        - contactDetails
+        - deliveryStatus
+        - orderId
+        - paymentId
+        - deliveryType
+        - deliveryPrice
+        - deliveryFee
+        - deliveryItems
+
+    DeliveryReturn:
+      properties:
+        deliveryReturnId:
+          type: string
+        returnDate:
+          type: string
+          format: date
+        returnReason:
+          type: string
+        deliveryAddress:
+          type: object
+          properties:
+            departingFrom:
+              $ref: "#/components/schemas/Address"
+            arrivingTo:
+              $ref: "#/components/schemas/Address"
+        customerDetails:
+          $ref: "#/components/schemas/CustomerDetails"
+        personOfContact:
+          $ref: "#/components/schemas/CustomerDetails"
+        returnStatus:
+          type: string
+          enum:
+            - colelcting
+            - delivering
+            - delivered
+          default: collecting
+        returnId:
+          type: string
+        returnItems:
+          type: array
+          items:
+            type: string
+
+    Order:
+      properties:
+        totalAmmount:
+          $ref: "#/components/schemas/TotalAmmount"
+        status:
+          type: string
+          enum:
+            - pending
+            - collecting
+            - delivering
+            - delivered
+            - canceled
+            - returned
+          default: pending
+        contactDetails:
+          type: object
+          properties:
+            deliveryAddress:
+              $ref: "#/components/schemas/Address"
+            invoiceAddress:
+              $ref: "#/components/schemas/Address"
+            customerDetails:
+              $ref: "#/components/schemas/CustomerDetails"
+          required:
+            - deliveryAddress
+            - invoiceAddress
+            - customerDetails
+        products:
+          type: array
+          items:
+            type: string
+        userId:
+          type: string
+        voicherId:
+          type: string
+        paymentId:
+          type: string
+      required:
+        - totalAmmount
+        - status
+        - contactDetails
+        - products
+        - paymentId
+
+    Payment:
+      properties:
+        userId:
+          type: string
+        customerDetails:
+          $ref: "#/components/schemas/CustomerDetails"
+        orderId:
+          type: string
+        currency:
+          type: string
+        paymentDate:
+          type: string
+          format: date
+        paymentStatus:
+          type: string
+          enum:
+            - paid
+            - unpaid
+            - onHold
+        cardDetails:
+          type: object
+          properties:
+            stripeId:
+              type: string
+            brand:
+              type: string
+            last4digits:
+              type: string
+            expMonth:
+              type: string
+            expYear:
+              type: string
+        paymentType:
+          type: string
+          enum:
+            - card
+            - cashOnDelivery
+            - cashInShop
+            - bankTransfer
+            - paypal
+        stripePaymentId:
+          type: string
+        paymentDescription:
+          type: string
+        paymentAmmount:
+          type: number
+      required:
+        - customerDetails
+        - orderId
+        - currency
+        - paymentStatus
+        - paymentType
+        - paymentAmmount
+
+    Product:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 256
+        description:
+          type: string
+          maxLength: 50000
+        images:
+          type: array
+          items:
+            type: string
+        sku:
+          type: string
+        price:
+          type: number
+        isOnSale:
+          type: boolean
+          default: false
+        discountPrice:
+          type: number
+        discount:
+          type: number
+        sotck:
+          type: number
+        manufacturerDetails:
+          $ref: "#/components/schemas/ManufacturerDetails"
+        productSize:
+          $ref: "#/components/schemas/ProductSize"
+        rating:
+          type: number
+          default: 0
+        warrantyTime:
+          type: number
+          default: 24
+        warrantyType:
+          type: string
+          default: month
+          enum:
+            - day
+            - month
+            - year
+        specs:
+          type: object
+        variants:
+          type: array
+          items:
+            type: string
+        category:
+          type: string
+        subCategory:
+          type: string
+        brand:
+          type: string
+      required:
+        - title
+        - description
+        - images
+        - sku
+        - price
+        - stock
+        - manufacturerDetails
+        - productSize
+        - specs
+        - category
+        - subCategory
+        - brand
+
+    Return:
+      properties:
+        returnDate:
+          type: string
+          format: date
+        returnReason:
+          type: string
+        returnPrice:
+          type: number
+        returnStatus:
+          type: string
+          default: pending
+          enum:
+            - pending
+            - approved
+            - rejected
+            - collecting
+            - collected
+            - toWarehouse
+        returnedBy:
+          type: string
+          enum:
+            - customer
+            - admin
+        products:
+          type: array
+          items:
+            type: string
+        orderId:
+          type: string
+        adminId:
+          type: string
+        contctDetails:
+          type: object
+          properties:
+            customerAddress:
+              $ref: "#/components/schemas/Address"
+            customerDetails:
+              $ref: "#/components/schemas/CustomerDetails"
+          required:
+            - customerAddress
+            - customerDetails
+      required:
+        - returnDate
+        - returnReason
+        - returnPrice
+        - returnStatus
+        - returnedBy
+        - products
+        - orderId
+        - adminId
+        - contactDetails
+
+    Review:
+      properties:
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 2000
+        rating:
+          type: number
+        productId:
+          type: string
+        userId:
+          type: string
+      required:
+        - rating
+        - productId
+        - userId
+
+    SubCategory:
+      properties:
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        image:
+          type: string
+        category:
+          type: string
+      required:
+        - title
+        - description
+        - image
+        - category
+
+    Subscribe:
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        userId:
+          type: string
+        email:
+          type: string
+          pattern: ^[\w-\.]+@([\w-]+\.)+[\w-]{2,6}$
+
     UserProfile:
       properties:
         firstName:
@@ -293,16 +794,23 @@ components:
           pattern: ^[\w-\.]+@([\w-]+\.)+[\w-]{2,6}$
         phones:
           type: array
-          example: []
           nullable: true
           items:
             type: object
             properties:
-              test:
+              phone:
                 type: string
-        #           type: string
-        #           pattern: ^[0-9-+\s]{8,30}
-        #           nullable: true
+                maxLength: 30
+                minLength: 4
+                pattern: ^[0-9-+\s]{8,30}
+                nullable: true
+              type:
+                type: string
+                enum:
+                  - Home
+                  - Mobile
+                  - Work
+                default: Mobile
         role:
           type: string
           enum:
@@ -365,6 +873,84 @@ components:
           type: string
           format: date-time
 
+    Voucher:
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 2000
+        image:
+          type: string
+        discountType:
+          type: string
+          enum:
+            - percentage
+            - ammount
+          default: percentage
+        discount:
+          type: number
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        isAdd:
+          type: boolean
+          default: false
+      required:
+        - title
+        - description
+        - discountType
+        - discount
+        - startDate
+        - endDate
+        - isAdd
+
+    Warranty:
+      properties:
+        expirationDate:
+          type: string
+          format: date
+        warrantyType:
+          type: string
+          enum:
+            - warranty
+            - extendedWarranty
+            - noWarranty
+          default: warranty
+        warrantyPeriod:
+          type: number
+          default: 24
+        warrantyPeriodType:
+          type: string
+          enum:
+            - day
+            - month
+            - year
+          default: month
+        userId:
+          type: string
+        customerDetails:
+          $ref: "#/components/schemas/CustomerDetails"
+        orderId:
+          type: string
+        productId:
+          type: string
+        productSku:
+          type: string
+      required:
+        - expirationDate
+        - warrantyType
+        - warrantyPeriod
+        - warrantyPeriodType
+        - customerDetails
+        - orderId
+        - productId
+        - productSku
+
     ErrorResponse:
       properties:
         detail:
@@ -407,9 +993,129 @@ components:
           type: string
           pattern: ^\s[0-9]{4}$|^$
           nullable: true
+    Address:
+      type: object
+      properties:
+        building:
+          type: string
+          maxLength: 60
+        houseNumber:
+          type: string
+          maxLength: 60
+        unit:
+          type: string
+          maxLength: 60
+        street:
+          type: string
+          maxLength: 60
+        postCode:
+          type: string
+          maxLength: 20
+        locality:
+          type: string
+          maxLength: 60
+        city:
+          type: string
+          maxLength: 60
+        county:
+          type: string
+          maxLength: 60
+        country:
+          type: string
+          maxLength: 60
+      required:
+        - street
+        - locality
+        - city
+        - country
 
-tags:
-  - description: Services to fulfill actions for ASquare Commerce Website
-    name: ASquare Service
-  - description: Authentication Service
-    name: Authentication
+    CustomerDetails:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          pattern: ^[\w-\.]+@([\w-]+\.)+[\w-]{2,6}$
+        phones:
+          type: array
+          items:
+            $ref: "#/components/schemas/PhoneObject"
+      required:
+        - firstName
+        - lastName
+        - email
+        - phones
+
+    PhoneObject:
+      type: object
+      properties:
+        phone:
+          type: string
+          maxLength: 30
+          minLength: 4
+          pattern: ^[0-9-+\s]{8,30}
+        type:
+          type: string
+          enum:
+            - Home
+            - Mobile
+            - Work
+          default: Mobile
+      required:
+        - phone
+        - type
+
+    TotalAmmount:
+      type: object
+      properties:
+        price:
+          type: number
+        isDiscount:
+          type: boolean
+          default: false
+        discountType:
+          type: string
+          enum:
+            - percent
+            - ammount
+          default: percent
+        discount:
+          type: number
+        totalPrice:
+          type: number
+      required:
+        - price
+        - totalPrice
+
+    ManufacturerDetails:
+      type: object
+      properties:
+        modelNumber:
+          type: string
+          maxLength: 256
+        releaseDate:
+          type: string
+          format: date
+      required:
+        - modelNumber
+        - releaseDate
+
+    ProductSize:
+      type: object
+      properties:
+        weight:
+          type: number
+        width:
+          type: number
+        height:
+          type: number
+        depth:
+          type: number
+      required:
+        - weight
+        - width
+        - height
+        - depth

@@ -9,7 +9,7 @@ const addressSchema = new mongoose.Schema(
     postCode: { type: String, maxlength: 20 },
     locality: { type: String, required: true, maxlength: 60 },
     city: { type: String, required: true, maxlength: 60 },
-    county: { type: String, required: true, maxlength: 60 },
+    county: { type: String, maxlength: 60 },
     country: { type: String, required: true, maxlength: 60 },
     type: {
       type: String,

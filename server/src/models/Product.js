@@ -4,7 +4,7 @@ const productSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true, maxlength: 256 },
     description: { type: String, required: true, trim: true, maxlength: 50000 },
-    image: [{ type: String, required: true, trim: true }],
+    images: [{ type: String, required: true, trim: true }],
     sku: { type: String, required: true },
     price: { type: Number, required: true },
     isOnSale: { type: Boolean, default: false },
@@ -23,14 +23,30 @@ const productSchema = new mongoose.Schema(
     },
     rating: { type: Number, defaul: 0 },
     warrantyTime: { type: Number, default: 24 },
-    warrantyType: { type: String, default: "month", enum: ["month", "year"] },
+    warrantyType: {
+      type: String,
+      default: "month",
+      enum: ["day", "month", "year"],
+    },
     specs: { type: Object, required: true },
     variants: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Product", default: null },
     ],
-    category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
-    subCategory: { type: mongoose.Schema.Types.ObjectId, ref: "SubCategory" },
-    brand: { type: mongoose.Schema.Types.ObjectId, ref: "Brand" },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
+    subCategory: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SubCategory",
+      required: true,
+    },
+    brand: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Brand",
+      required: true,
+    },
   },
   { timestamps: true }
 );
