@@ -10,8 +10,10 @@ import Subscribe from "../models/Subscribe";
 
 export const getProtected = async (req, res, next) => {
   try {
-    const publicUser = await req.user;
-    const publicProfile = await publicUser.getPublicProfile();
+    const user = await User.findOne({ _id: req.userId });
+
+    const publicProfile = await user.getPublicProfile();
+
     res.status(200).json({
       success: true,
       user: publicProfile,
@@ -167,16 +169,21 @@ export const postRegister = async (req, res, next) => {
       discount: 0,
     });
     await sendConfirmationEmail(body.firstName, email, activationToken);
-    await newUser.save();
-    await newCart.save();
-    const subscription = Subscribe.findOne({ email });
+
+    const subscription = await Subscribe.findOne({ email });
     if (body.subscribe && !subscription) {
       const newSubscribe = new Subscribe({
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
         userId: newUser._id,
         email: newUser.email,
       });
+
       await newSubscribe.save();
     }
+
+    await newUser.save();
+    await newCart.save();
 
     res.status(200).json({
       title: "account-created",

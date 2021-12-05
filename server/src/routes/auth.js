@@ -14,10 +14,7 @@ authRouter.get("/protected", authorization, getProtected);
 authRouter.post("/login", postLogin);
 authRouter.post("/register", postRegister);
 authRouter.get("/logout", authorization, (req, res) => {
-  return res
-    .clearCookie("access_token")
-    .status(200)
-    .json({ message: "Successfully logged out" });
+  return res.clearCookie("access_token").status(200).json();
 });
 authRouter.get("/active/:confirmationCode", confirmEmail);
 authRouter.post("/resendemail", resendValidationEmail);
