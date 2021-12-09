@@ -21,6 +21,7 @@ const authorization = (req, res, next) => {
         "Your password have expired. Please change your password"
       );
     }
+
     req.userId = data.userId;
     req.userRole = data.role;
     req.resetPasswordExpires = userDate;

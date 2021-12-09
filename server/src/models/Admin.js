@@ -44,7 +44,7 @@ const adminSchema = new mongoose.Schema(
     ],
     role: {
       type: String,
-      enum: ["user", "support", "admin"],
+      enum: ["support", "admin"],
       required: true,
     },
     avatar: { type: String },
@@ -70,17 +70,26 @@ const adminSchema = new mongoose.Schema(
       type: String,
       default: "active",
       enum: ["active", "pending", "blocked"],
+      required: true,
     },
     manager: { type: mongoose.Schema.Types.ObjectId, ref: "Admin" },
     department: {
       type: String,
-      enum: ["sales", "office", "support", "hr", "it", "marketing", "other"],
+      enum: [
+        "sales",
+        "office",
+        "support",
+        "hr",
+        "it",
+        "marketing",
+        "management",
+        "other",
+      ],
       required: true,
     },
     /* For reset password */
     resetPasswordToken: {
       type: String,
-      required: true,
     },
     resetPasswordExpires: {
       type: Date,
@@ -90,6 +99,15 @@ const adminSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+adminSchema.methods.getPublicProfile = async function () {
+  const user = this;
+
+  const userData = user.toObject();
+
+  delete userData.hash;
+  delete userData.salt;
+  return userData;
+};
 const Admin = mongoose.model("Admin", adminSchema, "admin");
 
 export default Admin;

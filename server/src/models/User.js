@@ -34,11 +34,18 @@ const userSchema = new mongoose.Schema(
     hash: { type: String, required: true },
     phones: [
       {
-        phone: { type: String, trim: true, maxlength: 30, minlength: 4 },
+        phone: {
+          type: String,
+          trim: true,
+          maxlength: 30,
+          minlength: 4,
+          required: true,
+        },
         type: {
           type: String,
           enum: ["Home", "Mobile", "Work"],
           default: "Mobile",
+          required: true,
         },
       },
     ],
@@ -67,7 +74,6 @@ const userSchema = new mongoose.Schema(
     /* For reset password */
     resetPasswordToken: {
       type: String,
-      required: true,
     },
     activationToken: {
       type: String,
