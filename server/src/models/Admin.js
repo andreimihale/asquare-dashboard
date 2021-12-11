@@ -42,11 +42,13 @@ const adminSchema = new mongoose.Schema(
         },
       },
     ],
-    role: {
-      type: String,
-      enum: ["support", "admin"],
-      required: true,
-    },
+    role: [
+      {
+        type: String,
+        enum: ["support", "manager", "admin", "superadmin"],
+        required: true,
+      },
+    ],
     avatar: { type: String },
     favorites: [
       {
@@ -83,7 +85,7 @@ const adminSchema = new mongoose.Schema(
         "it",
         "marketing",
         "management",
-        "other",
+        "admin",
       ],
       required: true,
     },

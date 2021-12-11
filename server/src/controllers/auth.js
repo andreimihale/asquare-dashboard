@@ -105,6 +105,16 @@ export const loginUser = async (req, res, next) => {
         secure: process.env.NODE_ENV === "production",
         expires: new Date(Date.now() + ONE_DAY),
       })
+      .cookie("user_id", publicProfile._id, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(Date.now() + ONE_DAY),
+      })
+      .cookie("user_role", publicProfile.role, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(Date.now() + ONE_DAY),
+      })
       .status(200)
       .json(publicProfile);
   } catch (error) {
@@ -160,16 +170,6 @@ export const loginAdmin = async (req, res, next) => {
 
     res
       .cookie("access_token", tokenObject.token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        expires: new Date(Date.now() + ONE_DAY),
-      })
-      .cookie("user_id", admin._id, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        expires: new Date(Date.now() + ONE_DAY),
-      })
-      .cookie("user_role", admin.role, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         expires: new Date(Date.now() + ONE_DAY),

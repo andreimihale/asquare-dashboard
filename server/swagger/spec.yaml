@@ -382,10 +382,14 @@ components:
           items:
             $ref: "#/components/schemas/PhoneObject"
         role:
-          type: string
-          enum:
-            - support
-            - admin
+          type: array
+          items:
+            type: string
+            enum:
+              - support
+              - manager
+              - admin
+              - superadmin
         avatar:
           type: string
         isActive:
@@ -549,11 +553,14 @@ components:
               - phone
               - type
         role:
-          type: string
-          enum:
-            - user
-            - support
-            - admin
+          type: array
+          items:
+            type: string
+            enum:
+              - support
+              - manager
+              - admin
+              - superadmin
         avatar:
           type: string
           nullable: true
