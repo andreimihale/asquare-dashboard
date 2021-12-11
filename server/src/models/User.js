@@ -78,10 +78,6 @@ const userSchema = new mongoose.Schema(
     activationToken: {
       type: String,
     },
-    resetPasswordExpires: {
-      type: Date,
-      required: true,
-    },
   },
   { timestamps: true }
 );

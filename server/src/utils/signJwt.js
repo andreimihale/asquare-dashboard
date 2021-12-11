@@ -4,12 +4,19 @@ import "dotenv/config";
 const signJwt = (user) => {
   const { _id, role, resetPasswordExpires } = user;
   const expiresIn = 60;
-
-  const payload = {
-    userId: _id,
-    role,
-    resetPasswordExpires,
-  };
+  let payload;
+  if (role !== "user") {
+    payload = {
+      userId: _id,
+      role,
+      resetPasswordExpires,
+    };
+  } else {
+    payload = {
+      userId: _id,
+      role,
+    };
+  }
 
   const signedToken = jwt.sign(payload, process.env.JWT_SECRET);
 

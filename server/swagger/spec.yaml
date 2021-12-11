@@ -280,9 +280,57 @@ paths:
       description: Login admin using email and password
       tags:
         - Authentication
+  /auth/password/change:
+    post:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResetPasswordResponse"
+          description: Success
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Bad request. Some of the inputs provided to the request aren't valid"
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: User password have expired
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Internal server error. Additional details will be contained on the server logs."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                password:
+                  type: string
+      operationId: changePassword
+      summary: Change password
+      description: Change user or admin password if they are logged in
+      tags:
+        - Authentication
 
 components:
   schemas:
+    ResetPasswordResponse:
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+      required:
+        - title
+        - description
     LoginBody:
       properties:
         email:
@@ -1129,9 +1177,6 @@ components:
         activationToken:
           nullable: true
           type: string
-        resetPasswordExpires:
-          type: string
-          format: date-time
 
     Voucher:
       properties:

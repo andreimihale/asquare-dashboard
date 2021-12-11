@@ -181,6 +181,16 @@ export const loginAdmin = async (req, res, next) => {
   }
 };
 
+const validatePassword = (password) => {
+  if (!validator.isStrongPassword(password)) {
+    throw new ProblemError(
+      400,
+      "weak-password",
+      "Weak password",
+      "Please provide a stronger password"
+    );
+  }
+};
 const validateRegisterBody = (body) => {
   const { email } = body;
   email.trim();
@@ -208,14 +218,8 @@ const validateRegisterBody = (body) => {
     );
   }
 
-  if (!validator.isStrongPassword(body.password)) {
-    throw new ProblemError(
-      400,
-      "weak-password",
-      "Weak password",
-      "Please provide a stronger password"
-    );
-  }
+  validatePassword(body.password);
+
   return { email, ...body };
 };
 
@@ -402,3 +406,41 @@ export const resendValidationEmail = async (req, res, next) => {
     next(error);
   }
 };
+
+export const changePassword = async (req, res, next) => {
+  try {
+    const { password } = req.body;
+    let user;
+    if (req.userRole === "user") {
+      user = await User.findOne({ _id: req.userId });
+    } else {
+      user = await Admin.findOne({ _id: req.userId });
+      user.resetPasswordExpires = new Date(Date.now() + THREE_MONTHS);
+    }
+
+    validatePassword(password);
+
+    const saltHash = generatePassword(password);
+
+    user.salt = saltHash.salt;
+    user.hash = saltHash.hash;
+
+    await user.save();
+
+    res.json({
+      title: "password-changed",
+      description: "Password changed successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// export const resetPasswordRequest = async (req, res, next) => {
+//   try {
+//     const a = req;
+//     res.json(a);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
