@@ -2,11 +2,11 @@ openapi: 3.0.0
 info:
   description: Definition of the operations available for the ASquare Dashboard
   title: ASquare APIs
-  version: 0.1.0
+  version: 0.2.0
 servers:
   - url: http://localhost:3000/api
 paths:
-  /auth/login:
+  /auth/user/login:
     post:
       responses:
         "200":
@@ -44,8 +44,8 @@ paths:
       summary: Login user
       description: Login user using email and password
       tags:
-        - Authentication
-  /auth/register:
+        - User Authentication
+  /auth/user/register:
     post:
       responses:
         "200":
@@ -77,8 +77,8 @@ paths:
       summary: Register user
       description: Create a new user
       tags:
-        - Authentication
-  /auth/active/{confirmationCode}:
+        - User Authentication
+  /auth/user/activate/{confirmationCode}:
     get:
       parameters:
         - description: Confirmation code send by email
@@ -106,8 +106,8 @@ paths:
       summary: Activate user
       description: Activate user via email. Send request to activate user
       tags:
-        - Authentication
-  /auth/resendemail:
+        - User Authentication
+  /auth/user/resendemail:
     post:
       responses:
         "200":
@@ -133,8 +133,144 @@ paths:
       summary: Resend activation email
       description: Resend activation email with the activation token
       tags:
-        - Authentication
-  /auth/logout:
+        - User Authentication
+  /auth/user/password/change:
+    post:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResetPasswordResponse"
+          description: Success
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Bad request. Some of the inputs provided to the request aren't valid"
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: User password have expired
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Internal server error. Additional details will be contained on the server logs."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                password:
+                  type: string
+              required:
+                - password
+      operationId: changePassword
+      summary: Change password
+      description: Change user password if they are logged in
+      tags:
+        - User Authentication
+  /auth/user/password/request/reset:
+    post:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  token:
+                    type: string
+                required:
+                  - title
+                  - description
+          description: Success
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Bad request. Some of the inputs provided to the request aren't valid"
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Internal server error. Additional details will be contained on the server logs."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                  pattern: ^[\w-\.]+@([\w-]+\.)+[\w-]{2,6}$
+              required:
+                - email
+      operationId: userPasswordRequest
+      summary: User Request to Change Password
+      description: Request from user to change password
+      tags:
+        - User Authentication
+  /auth/user/password/reset/{resetPasswordToken}:
+    post:
+      parameters:
+        - description: Reset password token
+          in: path
+          name: resetPasswordToken
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  title:
+                    type: string
+                  description:
+                    type: string
+                required:
+                  - title
+                  - description
+          description: Success
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Bad request. Some of the inputs provided to the request aren't valid"
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Internal server error. Additional details will be contained on the server logs."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                password:
+                  type: string
+              required:
+                - password
+      operationId: userPasswordReset
+      summary: User Password Reset
+      description: Action to reset a user password
+      tags:
+        - User Authentication
+
+  /auth/user/logout:
     get:
       parameters:
         - description: Confirm user is logged in
@@ -168,8 +304,8 @@ paths:
       summary: Logout
       description: Send empty cookies to log out a user
       tags:
-        - Authentication
-  /auth/protected:
+        - User Authentication
+  /auth/user/protected:
     get:
       parameters:
         - description: Confirm user is logged in
@@ -240,7 +376,7 @@ paths:
       summary: Register admin
       description: Register a new admin in database
       tags:
-        - Authentication
+        - Admin Authentication
   /auth/admin/login:
     post:
       responses:
@@ -279,15 +415,22 @@ paths:
       summary: Login admin
       description: Login admin using email and password
       tags:
-        - Authentication
-  /auth/password/change:
+        - Admin Authentication
+  /auth/admin/password/change:
     post:
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResetPasswordResponse"
+                properties:
+                  title:
+                    type: string
+                  description:
+                    type: string
+                required:
+                  - title
+                  - description
           description: Success
         "400":
           content:
@@ -314,11 +457,108 @@ paths:
               properties:
                 password:
                   type: string
-      operationId: changePassword
-      summary: Change password
-      description: Change user or admin password if they are logged in
+              required:
+                - password
+      operationId: adminChangePassword
+      summary: Admin Change Password
+      description: Change admin password if they are logged in
       tags:
-        - Authentication
+        - Admin Authentication
+  /auth/admin/password/request/reset:
+    post:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  token:
+                    type: string
+                required:
+                  - title
+                  - description
+          description: Success
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Bad request. Some of the inputs provided to the request aren't valid"
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Internal server error. Additional details will be contained on the server logs."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                  pattern: ^[\w-\.]+@([\w-]+\.)+[\w-]{2,6}$
+              required:
+                - email
+      operationId: adminPasswordRequest
+      summary: Admin Request to Change Password
+      description: Request from admin to change password
+      tags:
+        - Admin Authentication
+
+  /auth/admin/password/reset/{resetPasswordToken}:
+    post:
+      parameters:
+        - description: Reset password token
+          in: path
+          name: resetPasswordToken
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  title:
+                    type: string
+                  description:
+                    type: string
+                required:
+                  - title
+                  - description
+          description: Success
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Bad request. Some of the inputs provided to the request aren't valid"
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Internal server error. Additional details will be contained on the server logs."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                password:
+                  type: string
+              required:
+                - password
+      operationId: adminPasswordReset
+      summary: Admin Password Reset
+      description: Action to reset admin password
+      tags:
+        - Admin Authentication
 
 components:
   schemas:
@@ -1174,6 +1414,7 @@ components:
           default: pending
         resetPasswordToken:
           type: string
+          nullable: true
         activationToken:
           nullable: true
           type: string
