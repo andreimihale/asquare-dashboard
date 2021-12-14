@@ -344,7 +344,6 @@ paths:
       description: Protected route only for logged users
       tags:
         - Testing
-
   /auth/admin/register:
     post:
       responses:
