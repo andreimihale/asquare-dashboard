@@ -34,7 +34,7 @@
     "multer": "^1.4.3",
     "nock": "^13.2.1",
     "nodemailer": "^6.7.1",
-    "swagger-ui-express": "^4.1.6",
+    "swagger-ui-express": "^4.2.0",
     "uuid": "^8.3.2",
     "validator": "^13.7.0",
     "winston": "^3.3.3",
