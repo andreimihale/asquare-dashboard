@@ -45,5 +45,5 @@ export const validateRegisterBody = (body) => {
 
   validatePassword(body.password);
 
-  return { email, ...body };
+  return { ...body, email };
 };

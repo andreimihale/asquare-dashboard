@@ -1,5 +1,6 @@
 import Router from "express";
 import {
+  loadUser,
   loginUser,
   registerUser,
   confirmEmail,
@@ -13,6 +14,7 @@ import authorization from "../../middlewares/cookieMiddleware";
 
 const userAuthRouter = Router();
 
+userAuthRouter.get("/load", authorization, loadUser);
 userAuthRouter.post("/login", loginUser);
 userAuthRouter.post("/register", registerUser);
 userAuthRouter.get("/activate/:confirmationCode", confirmEmail);
@@ -27,7 +29,7 @@ userAuthRouter.get("/logout", authorization, (req, res) => {
     .clearCookie("user_id")
     .clearCookie("user_role")
     .status(200)
-    .json();
+    .json({});
 });
 
 export default userAuthRouter;

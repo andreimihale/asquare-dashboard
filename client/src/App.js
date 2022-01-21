@@ -1,25 +1,42 @@
-import React from "react";
-import logo from "./logo.svg";
-import "./App.css";
+import React, { useEffect, useState } from "react";
+import { Provider } from "react-redux";
+import store from "./store";
+import "./App.scss";
+import Routes from "./AppRoutes";
 
 function App() {
+  const [screenSize, getDimension] = useState({
+    dynamicWidth: window.innerWidth,
+    dynamicHeight: window.innerHeight,
+  });
+
+  const setDimension = () => {
+    getDimension({
+      dynamicWidth: window.innerWidth,
+      dynamicHeight: window.innerHeight,
+    });
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", setDimension);
+
+    return () => {
+      window.removeEventListener("resize", setDimension);
+    };
+  }, [screenSize]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React for a better world
-        </a>
-      </header>
-    </div>
+    <Provider store={store}>
+      <div className="app-container">
+        <header className="app-header">HEADER</header>
+        {screenSize.dynamicWidth >= 1536 ? (
+          <aside className="app-navigation">ASIDE</aside>
+        ) : null}
+        <main className="app-content">
+          <Routes />
+        </main>
+      </div>
+    </Provider>
   );
 }
 
