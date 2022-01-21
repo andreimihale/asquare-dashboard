@@ -42,6 +42,66 @@ export const getProtected = async (req, res, next) => {
   }
 };
 
+export const loadUser = async (req, res, next) => {
+  try {
+    const {
+      userId,
+      // eslint-disable-next-line camelcase
+      cookies: { access_token },
+    } = req;
+
+    const user = await User.findOne({ _id: userId }).select("-hash -salt");
+
+    if (!user) {
+      throw new ProblemError(
+        400,
+        "wrong-credentials",
+        "Wrong credentials",
+        "Invalid email or password"
+      );
+    }
+
+    if (user.isActive === "pending") {
+      throw new ProblemError(
+        400,
+        "user-not-active",
+        "User not active",
+        "User is not activated. Please verify your email to activate it"
+      );
+    }
+
+    if (user.isActive === "blocked") {
+      throw new ProblemError(
+        400,
+        "user-blocked",
+        "User blocked",
+        "User has been blocked for violating our T&C"
+      );
+    }
+
+    res
+      .cookie("access_token", access_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(Date.now() + ONE_DAY),
+      })
+      .cookie("user_id", user._id, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(Date.now() + ONE_DAY),
+      })
+      .cookie("user_role", user.role, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(Date.now() + ONE_DAY),
+      })
+      .status(200)
+      .json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -156,7 +216,7 @@ export const registerUser = async (req, res, next) => {
       email,
       salt: saltHash.salt,
       hash: saltHash.hash,
-      phones: validateBody.phone || [],
+      phones: validateBody.phones || [],
       avatar: validateBody.avatar || null,
       isActive: "pending",
       activationToken,
@@ -229,8 +289,11 @@ export const confirmEmail = async (req, res, next) => {
 
 export const resendValidationEmail = async (req, res, next) => {
   try {
-    const { name, email, activationToken } = req.body;
-    await sendConfirmationEmail(name, email, activationToken);
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    await sendConfirmationEmail(user.firstName, email, user.activationToken);
     res.status(200).json();
   } catch (error) {
     next(error);
