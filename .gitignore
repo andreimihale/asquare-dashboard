@@ -1,1 +1,10 @@
 /node_modules
+# testing
+/coverage
+
+# production
+/build
+
+test-report.xml
+.env
+views
